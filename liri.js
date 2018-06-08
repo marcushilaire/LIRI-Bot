@@ -27,10 +27,14 @@ var feature = process.argv[2];
 
 var nodeArgs = process.argv;
 
-function movieThis() {
-    var movieName = "";
+function movieThis(movie) {
+    var movieName = movie;
 
-    if (process.argv[3] !== false) {
+    if (process.argv.length === 3 && movieName === undefined) {
+
+        movieName = "Mr.+Nobody";
+        
+    } else {
         for (var i = 3; i < process.argv.length; i++) {
 
             if (i > 3 && i < process.argv.length) {
@@ -45,8 +49,6 @@ function movieThis() {
 
             }
         }
-    } else {
-        movieName = "Mr.+Nobody";
     }
     var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
 
@@ -90,39 +92,59 @@ function myTweets() {
 
 }
 
-function spotifyThis() {
-    var song = "";
+function spotifyThis(songName) {
+    var song = songName;
     var artists = "";
-    if (process.argv[3] === false) {
-        song = "The Sign"
+    if (process.argv.length === 3 && song === undefined) {
+        song = "The Sign";
     } else {
-        for (var i=3; i < process.argv.length; i++) {
+        for (var i = 3; i < process.argv.length; i++) {
             if (i === 3) {
                 song += process.argv[i];
             } else {
                 song += " " + process.argv[i];
             }
         }
-        var params = {type: "track", query: song, id: spotify.id, secret: spotify.secret};
-        spotify.search(params, function(error, data){
-            if (!error) {
-                for (var j = 0; j < data.tracks.items[0].artists.length; j++)
-                    if (j === 0) {
-                        artists += data.tracks.items[0].artists[0].name;
-                    } else {
-                        artists += ", " + data.tracks.items[0].artists[j].name;
-                    }
-                
-                console.log(artists);
-                console.log(data.tracks.items[0].name);
-                console.log(data.tracks.items[0].url);
-                console.log(data.tracks.items[0].album.name);
-            } else {
-                console.log(error);
-            }
-        });
-
     }
+
+    var params = { type: "track", query: song, id: spotify.id, secret: spotify.secret };
+    spotify.search(params, function (error, data) {
+        if (!error) {
+            for (var j = 0; j < data.tracks.items[0].artists.length; j++)
+                if (j === 0) {
+                    artists += data.tracks.items[0].artists[0].name;
+                } else {
+                    artists += ", " + data.tracks.items[0].artists[j].name;
+                }
+
+            console.log("Artists: " + artists);
+            console.log("Track: " + data.tracks.items[0].name);
+            console.log("Link: " + data.tracks.items[0].external_urls.spotify);
+            console.log("Album: " + data.tracks.items[0].album.name);
+        } else {
+            console.log(error);
+        }
+    });
+}
+
+function doWhatItSays() {
+    fs.readFile('random.txt', "utf8", function (error, data) {
+        var arr = data.split(',');
+
+        var cmd = arr[0];
+        var argument = arr[1];
+
+
+        if (cmd == "my-tweets") {
+            myTweets(argument);
+        } else if (cmd == "spotify-this-song") {
+            spotifyThis(argument);
+        } else if (cmd == "movie-this") {
+            movieThis(argument);
+        } else {
+            console.log("Not A Valid Command")
+        }
+    });
 }
 
 
