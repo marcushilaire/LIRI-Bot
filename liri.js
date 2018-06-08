@@ -96,7 +96,7 @@ function spotifyThis(songName) {
     var song = songName;
     var artists = "";
     if (process.argv.length === 3 && song === undefined) {
-        song = "The Sign";
+        song = "The Sign Ace of Base";
     } else {
         for (var i = 3; i < process.argv.length; i++) {
             if (i === 3) {
