@@ -1,13 +1,15 @@
+var dotEnv = require('dotenv').config();
 var keys = require("./keys.js");
 var request = require("request");
 var fs = require("fs");
-var dotEnv = require('dotenv').config();
-var Spoti = require("spotify");
+var Spotify = require("node-spotify-api")
+// var spotifyApi = require("spotify");
+// var spotifyWebApi = require("spotify-web-api-node");
 var twitter = require("twitter");
 
-function spotify(input) {
-    id: input.id;
-    secret: input.secret
+function Spotify(inp) {
+    id: inp.id;
+    secret: inp.secret
 
 }
 
@@ -18,7 +20,7 @@ function twitter(input) {
     access_token_secret: input.access_token_secret;
 }
 
-var spotify = new spotify(keys.spotify);
+var spotify = new Spotify(keys.spotify);
 var client = new twitter(keys.twitter);
 
 var feature = process.argv[2];
@@ -55,12 +57,12 @@ function movieThis() {
         if (!error && response.statusCode === 200) {
             console.log("Title: " + JSON.parse(body).Title);
             console.log("Release Year: " + JSON.parse(body).Year);
-            console.log("Rating: " + JSON.parse(body).imdbRating);
-            console.log("Release Year: " + JSON.parse(body).tomatoRating);
-            console.log("Release Year: " + JSON.parse(body).Country);
-            console.log("Release Year: " + JSON.parse(body).Language);
-            console.log("Release Year: " + JSON.parse(body).Plot);
-            console.log("Release Year: " + JSON.parse(body).Actors);
+            console.log("IMDB Rating: " + JSON.parse(body).imdbRating);
+            console.log("Rotten Tomato Rating: " + JSON.parse(body).tomatoRating);
+            console.log("Country: " + JSON.parse(body).Country);
+            console.log("Language: " + JSON.parse(body).Language);
+            console.log("Plot: " + JSON.parse(body).Plot);
+            console.log("Actors: " + JSON.parse(body).Actors);
         }
     });
 
@@ -89,8 +91,8 @@ function myTweets() {
 }
 
 function spotifyThis() {
-    console.log(process.argv);
     var song = "";
+    var artists = "";
     if (process.argv[3] === false) {
         song = "The Sign"
     } else {
@@ -101,10 +103,20 @@ function spotifyThis() {
                 song += " " + process.argv[i];
             }
         }
-
-        spotify.get({type: "track", query: song}, function(error, data){
+        var params = {type: "track", query: song, id: spotify.id, secret: spotify.secret};
+        spotify.search(params, function(error, data){
             if (!error) {
-                console.log(data);
+                for (var j = 0; j < data.tracks.items[0].artists.length; j++)
+                    if (j === 0) {
+                        artists += data.tracks.items[0].artists[0].name;
+                    } else {
+                        artists += ", " + data.tracks.items[0].artists[j].name;
+                    }
+                
+                console.log(artists);
+                console.log(data.tracks.items[0].name);
+                console.log(data.tracks.items[0].url);
+                console.log(data.tracks.items[0].album.name);
             } else {
                 console.log(error);
             }
