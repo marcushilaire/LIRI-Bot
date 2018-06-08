@@ -136,7 +136,7 @@ function doWhatItSays() {
 
 
         if (cmd == "my-tweets") {
-            myTweets(argument);
+            myTweets();
         } else if (cmd == "spotify-this-song") {
             spotifyThis(argument);
         } else if (cmd == "movie-this") {
